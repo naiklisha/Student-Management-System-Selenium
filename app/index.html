@@ -1,0 +1,187 @@
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5fa;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #243b64;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 90%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #243b64;
+            color: white;
+        }
+
+        #message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Student Management System</h1>
+    <p style="text-align:center;">Add, view and manage student records</p>
+
+    <form id="studentForm">
+        <input type="text" id="studentName" placeholder="Student Name" required>
+        <input type="text" id="studentUSN" placeholder="Student USN" required>
+        <input type="text" id="studentCourse" placeholder="Course" required>
+        <input type="email" id="studentEmail" placeholder="Email" required>
+
+        <button type="submit" id="addStudentBtn">Add Student</button>
+    </form>
+
+    <p id="message"></p>
+
+    <h2>Student Records</h2>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>USN</th>
+                <th>Course</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody id="studentTableBody">
+        </tbody>
+    </table>
+
+    <p id="studentCount">Total Students: 0</p>
+</div>
+
+<script>
+    const studentForm = document.getElementById("studentForm");
+    const studentTableBody = document.getElementById("studentTableBody");
+    const message = document.getElementById("message");
+    const studentCount = document.getElementById("studentCount");
+
+    let students = [];
+
+    studentForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const name = document.getElementById("studentName").value.trim();
+        const usn = document.getElementById("studentUSN").value.trim();
+        const course = document.getElementById("studentCourse").value.trim();
+        const email = document.getElementById("studentEmail").value.trim();
+
+        if (!name || !usn || !course || !email) {
+            message.textContent = "Please fill in all fields.";
+            return;
+        }
+
+        if (students.some(student => student.usn === usn)) {
+            message.textContent = "Student USN already exists!";
+            return;
+        }
+
+        students.push({ name, usn, course, email });
+
+        renderStudents();
+
+        message.textContent = "Student added successfully!";
+        studentForm.reset();
+    });
+
+    function renderStudents() {
+        studentTableBody.innerHTML = "";
+
+        students.forEach((student, index) => {
+            const row = document.createElement("tr");
+
+            [student.name, student.usn, student.course, student.email]
+                .forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+            const actionCell = document.createElement("td");
+            const deleteButton = document.createElement("button");
+
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "delete-btn";
+            deleteButton.onclick = function() {
+                students.splice(index, 1);
+                renderStudents();
+                message.textContent = "Student deleted successfully!";
+            };
+
+            actionCell.appendChild(deleteButton);
+            row.appendChild(actionCell);
+            studentTableBody.appendChild(row);
+        });
+
+        studentCount.textContent = "Total Students: " + students.length;
+    }
+</script>
+
+</body>
+</html>
